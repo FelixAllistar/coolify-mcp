@@ -14,6 +14,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     
     strategy:
       matrix:
@@ -36,6 +37,9 @@ jobs:
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
     
+    - name: Clean previous builds
+      run: rm -rf dist/ src/generated/ || true
+    
     - name: Check for OpenAPI spec updates
       run: pnpm run check-updates
       continue-on-error: true
@@ -43,12 +47,37 @@ jobs:
     - name: Generate types and build
       run: pnpm run refresh
     
+    - name: Verify build artifacts
+      run: |
+        ls -la dist/
+        test -f dist/index.js || (echo "Main dist file missing" && exit 1)
+        test -f dist/cli/index.js || (echo "CLI dist file missing" && exit 1)
+    
+    - name: Verify generated files
+      run: |
+        test -f src/generated/types.gen.ts || (echo "Generated types missing" && exit 1)
+        test -f coolify-openapi.json || (echo "OpenAPI spec missing" && exit 1)
+        echo "Generated files verified successfully"
+    
     - name: Run tests
       run: pnpm test
     
+    - name: Debug on failure
+      if: failure()
+      run: |
+        echo "Test failed. Debug information:"
+        echo "Node version: $(node --version)"
+        echo "NPM version: $(npm --version)"
+        echo "PNPM version: $(pnpm --version)"
+        echo "Working directory contents:"
+        ls -la
+        echo "Dist directory contents:"
+        ls -la dist/ || echo "Dist directory not found"
+        echo "Generated types status:"
+        ls -la src/generated/ || echo "Generated directory not found"
+    
     - name: Test CLI functionality
       run: |
-        pnpm run build
         node dist/cli/index.js --help
     
     - name: Test MCP server starts without configuration

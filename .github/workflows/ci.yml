@@ -10,6 +10,18 @@ on:
   schedule:
     # Check for API updates every Monday at 9 AM UTC
     - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      run_publish:
+        description: 'Run publish job (for testing)'
+        required: false
+        default: false
+        type: boolean
+      run_update_check:
+        description: 'Run update check job'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   test:
@@ -94,7 +106,7 @@ jobs:
   publish:
     needs: test
     runs-on: ubuntu-latest
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || inputs.run_publish
     
     steps:
     - uses: actions/checkout@v4
@@ -121,13 +133,19 @@ jobs:
       run: pnpm test
     
     - name: Publish to NPM
-      run: npm publish --access public
+      run: |
+        if [ "${{ github.event_name }}" = "release" ]; then
+          npm publish --access public
+        else
+          echo "Dry run - would publish package (skipping for manual trigger)"
+          npm pack
+        fi
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   update-check:
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'schedule' || inputs.run_update_check
     
     steps:
     - uses: actions/checkout@v4

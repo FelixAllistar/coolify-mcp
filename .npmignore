@@ -1,0 +1,46 @@
+# Source TypeScript files (since we include compiled JS)
+src/
+
+# Tests
+tests/
+*.test.js
+*.test.ts
+
+# Development files
+.env
+.env.*
+!.env.example
+
+# Build/development configs
+tsconfig.json
+vitest.config.ts
+.cursorignore
+
+# Documentation that's not needed in package
+.github/
+
+# Development scripts that users don't need
+scripts/
+
+# Lock files
+pnpm-lock.yaml
+package-lock.json
+
+# IDE files
+.vscode/
+.cursor/
+
+# Task management files
+tasks/
+.roo/
+.windsurfrules
+.roomodes
+.taskmasterconfig
+
+# Backup files
+*.backup
+*.bak
+
+# Temporary files
+*.tmp
+*.log 

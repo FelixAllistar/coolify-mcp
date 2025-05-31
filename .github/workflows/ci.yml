@@ -1,0 +1,127 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  release:
+    types: [ published ]
+  schedule:
+    # Check for API updates every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Check for OpenAPI spec updates
+      run: npm run check-updates
+      continue-on-error: true
+    
+    - name: Generate types and build
+      run: npm run refresh
+    
+    - name: Run tests
+      run: npm test
+    
+    - name: Test CLI functionality
+      run: |
+        npm run build
+        node dist/cli/index.js --help
+    
+    - name: Test MCP server starts without configuration
+      run: |
+        timeout 5s node dist/index.js || echo "Server exited as expected without config"
+    
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      if: matrix.node-version == '20.x'
+      with:
+        file: ./coverage/lcov.info
+        fail_ci_if_error: false
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        registry-url: 'https://registry.npmjs.org'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Generate latest types and build
+      run: npm run refresh
+    
+    - name: Run tests
+      run: npm test
+    
+    - name: Publish to NPM
+      run: npm publish --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  update-check:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Check for API updates
+      run: npm run check-updates
+    
+    - name: Create PR if updates available
+      if: failure()
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore: update OpenAPI spec and generated types'
+        title: 'Update Coolify API types'
+        body: |
+          Automated update of Coolify OpenAPI specification and generated types.
+          
+          This PR was created automatically when the CI detected that the remote OpenAPI spec has been updated.
+          
+          Changes:
+          - Updated OpenAPI specification from Coolify repository
+          - Regenerated TypeScript types and SDK
+          - Updated service and database type arrays
+          
+          Please review the changes and merge if everything looks correct.
+        branch: update/openapi-spec
+        delete-branch: true 

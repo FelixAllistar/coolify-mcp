@@ -1,0 +1,69 @@
+{
+  "name": "@felixallistar/coolify-mcp",
+  "version": "1.0.0",
+  "description": "Model Context Protocol server for Coolify API integration",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "coolify-mcp": "dist/cli/index.js"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "@hey-api/client-fetch": "^0.11.0",
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "@types/inquirer": "^9.0.8",
+    "axios": "^1.9.0",
+    "chalk": "^5.4.1",
+    "commander": "^14.0.0",
+    "dotenv": "^16.5.0",
+    "inquirer": "^12.6.3",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "zod": "^3.25.36",
+    "zod-to-json-schema": "^3.24.5"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "download-openapi": "node scripts/download-openapi.js",
+    "generate": "npm run download-openapi && npx @hey-api/openapi-ts -i coolify-openapi.json -o src/generated -c @hey-api/client-fetch && npm run update-service-types",
+    "update-service-types": "node scripts/update-service-types.js",
+    "check-updates": "node scripts/check-updates.js",
+    "refresh": "npm run generate && npm run build",
+    "prepare-release": "node scripts/prepare-release.js",
+    "start": "node dist/index.js",
+    "cli": "node dist/cli/index.js",
+    "clean": "rm -rf dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FelixAllistar/coolify-mcp.git"
+  },
+  "keywords": [
+    "mcp",
+    "coolify",
+    "api",
+    "model-context-protocol"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FelixAllistar/coolify-mcp/issues"
+  },
+  "homepage": "https://github.com/FelixAllistar/coolify-mcp#readme",
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.69.1",
+    "@types/node": "^22.15.29",
+    "vitest": "^2.1.6",
+    "@vitest/ui": "^2.1.6",
+    "msw": "^2.6.8",
+    "undici": "^6.21.0"
+  }
+}

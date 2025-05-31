@@ -1,6 +1,6 @@
 {
   "name": "@felixallistar/coolify-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Model Context Protocol server for Coolify API integration",
   "main": "dist/index.js",
   "type": "module",
@@ -53,7 +53,7 @@
     "model-context-protocol"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "GLWTPL",
   "bugs": {
     "url": "https://github.com/FelixAllistar/coolify-mcp/issues"
   },

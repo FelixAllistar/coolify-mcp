@@ -144,13 +144,13 @@ function main() {
   // Check if files exist
   if (!fs.existsSync(TYPES_FILE)) {
     console.error(`❌ Generated types file not found: ${TYPES_FILE}`);
-    console.error('   Run "npm run generate" first to generate types from OpenAPI spec');
+    console.error('   Run "pnpm run generate" first to generate types from OpenAPI spec');
     process.exit(1);
   }
   
   if (!fs.existsSync(OPENAPI_FILE)) {
     console.error(`❌ OpenAPI spec file not found: ${OPENAPI_FILE}`);
-    console.error('   Run "npm run download-openapi" first to download the latest spec');
+    console.error('   Run "pnpm run download-openapi" first to download the latest spec');
     process.exit(1);
   }
   

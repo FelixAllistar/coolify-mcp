@@ -113,7 +113,7 @@ async function main() {
       }
       
       console.log('\n💡 Run the following commands to update:');
-      console.log('   npm run refresh');
+      console.log('   pnpm run refresh');
       
       // Exit with code 1 to indicate update is needed (useful for CI)
       process.exit(1);

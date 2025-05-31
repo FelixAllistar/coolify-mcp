@@ -32,25 +32,25 @@ async function main() {
   // Check for API updates
   console.log('\n🔍 Checking for OpenAPI spec updates...');
   try {
-    execSync('npm run check-updates', { stdio: 'pipe' });
+    execSync('pnpm run check-updates', { stdio: 'pipe' });
     console.log('✅ OpenAPI spec is up to date');
   } catch (error) {
     console.log('⚠️  OpenAPI spec updates available, refreshing...');
-    runCommand('npm run refresh', 'Updating OpenAPI spec and regenerating types');
+    runCommand('pnpm run refresh', 'Updating OpenAPI spec and regenerating types');
   }
   
   // Run full test suite
-  runCommand('npm test', 'Running test suite');
+  runCommand('pnpm test', 'Running test suite');
   
   // Test build
-  runCommand('npm run build', 'Building project');
+  runCommand('pnpm run build', 'Building project');
   
   // Test CLI
   runCommand('node dist/cli/index.js --help', 'Testing CLI functionality');
   
   console.log('\n🎉 Release preparation complete!');
   console.log('\nNext steps:');
-  console.log('1. Update version: npm version patch|minor|major');
+  console.log('1. Update version: pnpm version patch|minor|major');
   console.log('2. Push changes: git push && git push --tags');
   console.log('3. Create GitHub release to trigger NPM publish');
   console.log('4. Or publish manually: npm publish --access public');

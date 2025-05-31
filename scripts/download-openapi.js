@@ -84,7 +84,7 @@ async function main() {
     validateOpenApiSpec(LOCAL_FILE);
     
     console.log('\n🎉 OpenAPI spec download complete!');
-    console.log('   You can now run "npm run generate" to update generated types');
+    console.log('   You can now run "pnpm run generate" to update generated types');
     
   } catch (error) {
     console.error('❌ Error downloading OpenAPI spec:', error.message);

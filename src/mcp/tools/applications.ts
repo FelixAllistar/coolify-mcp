@@ -35,7 +35,8 @@ export const applicationsToolSchema = z.object({
     'list', 'get', 'create_public', 'create_private_gh', 'create_private_key',
     'create_dockerfile', 'create_docker_image', 'create_docker_compose', 
     'update', 'delete', 'get_logs', 'start', 'stop', 'restart',
-    'list_envs', 'create_env', 'update_env', 'update_envs_bulk', 'delete_env'
+    'list_envs', 'create_env', 'update_env', 'update_envs_bulk', 'delete_env',
+    'execute_command'
   ]).describe("Operation to perform"),
   id: z.string().optional().describe("Application UUID"),
   env_id: z.string().optional().describe("Environment variable ID"),
@@ -49,7 +50,8 @@ const ALLOWED_OPERATIONS: string[] = [
   'list', 'get', 'create_public', 'create_private_gh', 'create_private_key',
   'create_dockerfile', 'create_docker_image', 'create_docker_compose', 
   'update', 'delete', 'get_logs', 'start', 'stop', 'restart',
-  'list_envs', 'create_env', 'update_env', 'update_envs_bulk', 'delete_env'
+  'list_envs', 'create_env', 'update_env', 'update_envs_bulk', 'delete_env',
+  'execute_command'
 ];
 
 export async function applicationsHandler(args: ApplicationsToolArgs) {
@@ -173,6 +175,60 @@ export async function applicationsHandler(args: ApplicationsToolArgs) {
         return await safeApiCall(() => deleteEnvByApplicationUuid({ 
           path: { uuid: id!, env_uuid: env_id! } 
         }));
+        
+      case 'execute_command':
+        validateRequiredParams({ id, body }, ['id', 'body']);
+        validateCoolifyId(id!, 'id');
+        const commandData = parseJsonBody(body);
+        
+        if (!commandData.command) {
+          throw new CoolifyError('Command is required in request body');
+        }
+        
+        // Try the undocumented execute endpoint
+        try {
+          // Since this endpoint isn't in the generated SDK, we'll make a direct fetch call
+          const response = await fetch(`${process.env.COOLIFY_API_URL}/api/v1/applications/${id}/execute`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.COOLIFY_API_TOKEN}`,
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({ command: commandData.command })
+          });
+          
+          if (!response.ok) {
+            if (response.status === 404) {
+              throw new CoolifyError(
+                `Execute command endpoint not available in this Coolify version or application not found. ` +
+                `This feature may not be supported in your Coolify instance.`,
+                404
+              );
+            }
+            
+            const errorText = await response.text();
+            throw new CoolifyError(
+              `API request failed: ${response.status} ${response.statusText}. ${errorText}`,
+              response.status
+            );
+          }
+          
+          const result = await response.json();
+          return { data: result };
+          
+        } catch (error) {
+          if (error instanceof CoolifyError) {
+            throw error;
+          }
+          
+          // Handle network errors or other fetch errors
+          throw new CoolifyError(
+            `Failed to execute command: ${error instanceof Error ? error.message : String(error)}`,
+            500,
+            { command: commandData.command, applicationId: id }
+          );
+        }
         
       default:
         // This should never be reached due to validateOperation above

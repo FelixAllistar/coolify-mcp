@@ -374,6 +374,35 @@ export function registerApplicationsCommands(program: Command) {
       }
     });
 
+  // Execute command in application container
+  apps.command('exec <id>')
+    .description('Execute a command inside the application container')
+    .argument('<command>', 'Command to execute inside the container')
+    .option('--interactive', 'Run command interactively (not yet supported)')
+    .action(async (id, command, options) => {
+      try {
+        const body = JSON.stringify({ command });
+        const result = await applicationsHandler({ 
+          operation: 'execute_command', 
+          id,
+          body 
+        });
+        
+        console.log(chalk.green(`Command executed in application ${id}:`));
+        console.log(result.data);
+      } catch (error: any) {
+        console.error(chalk.red('Error:'), error.message);
+        if (error.message.includes('not available in this Coolify version')) {
+          console.log(chalk.yellow('\nNote: This feature may not be supported in your Coolify version.'));
+          console.log(chalk.yellow('Alternatives:'));
+          console.log(chalk.yellow('1. SSH into your server and run: docker exec <container_name> <command>'));
+          console.log(chalk.yellow('2. Use Coolify\'s web interface if available'));
+          console.log(chalk.yellow('3. Update to a newer Coolify version that supports this feature'));
+        }
+        process.exit(1);
+      }
+    });
+
   // Environment variables management
   const envs = apps.command('envs')
     .description('Manage application environment variables');

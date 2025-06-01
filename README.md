@@ -18,7 +18,7 @@ Add to `~/.cursor/mcp.json` or `<project_folder>/.cursor/mcp.json`:
   "mcpServers": {
     "coolify-mcp": {
       "command": "npx",
-      "args": ["-y", "@felixallistar/coolify-mcp"],
+      "args": ["-y", "@felixallistar/coolify-mcp", "--server"],
       "env": {
         "COOLIFY_API_URL": "https://your-coolify-instance.com",
         "COOLIFY_API_TOKEN": "your-coolify-api-token"
@@ -36,7 +36,7 @@ Add to `<project_folder>/.vscode/mcp.json`:
   "servers": {
     "coolify-mcp": {
       "command": "npx",
-      "args": ["-y", "@felixallistar/coolify-mcp"],
+      "args": ["-y", "@felixallistar/coolify-mcp", "--server"],
       "env": {
         "COOLIFY_API_URL": "https://your-coolify-instance.com",
         "COOLIFY_API_TOKEN": "your-coolify-api-token"
@@ -135,6 +135,8 @@ This package provides two interaction methods with **complete feature parity**:
 
 Both interfaces provide identical functionality - choose based on your workflow.
 
+
+
 ## Development
 
 ### Automated API Updates
@@ -174,7 +176,7 @@ GLWTPL (Good Luck With That Public License) - see [LICENSE](LICENSE) file for de
   "mcpServers": {
     "coolify-mcp": {
       "command": "npx",
-      "args": ["-y", "@felixallistar/coolify-mcp"],
+      "args": ["-y", "@felixallistar/coolify-mcp", "--server"],
       "env": {
         "COOLIFY_API_URL": "https://your-coolify-instance.com",
         "COOLIFY_API_TOKEN": "your-coolify-api-token"
@@ -190,7 +192,7 @@ GLWTPL (Good Luck With That Public License) - see [LICENSE](LICENSE) file for de
   "mcpServers": {
     "coolify-mcp": {
       "command": "node",
-      "args": ["node_modules/@felixallistar/coolify-mcp/dist/index.js"],
+      "args": ["node_modules/@felixallistar/coolify-mcp/dist/index.js", "--server"],
       "env": {
         "COOLIFY_API_URL": "https://your-coolify-instance.com",
         "COOLIFY_API_TOKEN": "your-coolify-api-token"

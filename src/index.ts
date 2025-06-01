@@ -6,7 +6,7 @@ const require = createRequire(import.meta.url);
 
 // Detect if this is being run as MCP server or CLI
 const isMcpMode = () => {
-  // Check for explicit MCP mode flags
+  // Check for explicit MCP mode flags (HIGHEST PRIORITY)
   const hasServerFlag = process.argv.includes('--server') || process.argv.includes('--mcp');
   if (hasServerFlag) return true;
   
@@ -18,11 +18,13 @@ const isMcpMode = () => {
   const hasCliArgs = process.argv.length > 2 && !process.argv.slice(2).every(arg => arg.startsWith('--'));
   if (hasCliArgs) return false;
   
+  // Fallback detection for cases where flags aren't used:
   // MCP servers typically run with stdin not attached to a TTY (piped/redirected)
   // and often have no arguments
   const isStdioMode = !process.stdin.isTTY;
   
   // If stdin is piped/redirected and no CLI args, likely MCP mode
+  // BUT: only if no explicit flags were provided (we encourage using --server)
   if (isStdioMode && process.argv.length <= 2) return true;
   
   // Default to CLI mode for terminal usage (TTY) without arguments

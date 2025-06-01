@@ -1,11 +1,11 @@
 {
   "name": "@felixallistar/coolify-mcp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Model Context Protocol server for Coolify API integration",
   "main": "dist/index.js",
   "type": "module",
   "bin": {
-    "coolify-mcp": "dist/cli/index.js"
+    "coolify-mcp": "dist/index.js"
   },
   "directories": {
     "test": "tests"

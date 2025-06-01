@@ -165,3 +165,76 @@ npm run dev
 GLWTPL (Good Luck With That Public License) - see [LICENSE](LICENSE) file for details.
 
 *This software might just work or not, there is no third option. Good luck and Godspeed.* 
+
+## MCP Configuration
+
+### Option 1: Using npx (Recommended - Simple!)
+```json
+{
+  "mcpServers": {
+    "coolify-mcp": {
+      "command": "npx",
+      "args": ["-y", "@felixallistar/coolify-mcp"],
+      "env": {
+        "COOLIFY_API_URL": "https://your-coolify-instance.com",
+        "COOLIFY_API_TOKEN": "your-coolify-api-token"
+      }
+    }
+  }
+}
+```
+
+### Option 2: Direct node execution
+```json
+{
+  "mcpServers": {
+    "coolify-mcp": {
+      "command": "node",
+      "args": ["node_modules/@felixallistar/coolify-mcp/dist/index.js"],
+      "env": {
+        "COOLIFY_API_URL": "https://your-coolify-instance.com",
+        "COOLIFY_API_TOKEN": "your-coolify-api-token"
+      }
+    }
+  }
+}
+```
+
+### Option 3: Global installation
+```bash
+npm install -g @felixallistar/coolify-mcp
+```
+
+Then use the MCP server binary:
+```json
+{
+  "mcpServers": {
+    "coolify-mcp": {
+      "command": "coolify-mcp",
+      "env": {
+        "COOLIFY_API_URL": "https://your-coolify-instance.com",
+        "COOLIFY_API_TOKEN": "your-coolify-api-token"
+      }
+    }
+  }
+}
+```
+
+## CLI Usage
+
+For CLI commands, simply add arguments to the `coolify-mcp` command:
+
+```bash
+# Using npx (no installation needed)
+npx @felixallistar/coolify-mcp --help
+npx @felixallistar/coolify-mcp apps list
+
+# Or install globally for easier CLI usage
+npm install -g @felixallistar/coolify-mcp
+coolify-mcp --help
+coolify-mcp apps list
+```
+
+**Smart Detection:** 
+- `coolify-mcp` (no args) → MCP server mode
+- `coolify-mcp <command>` → CLI mode 

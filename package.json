@@ -25,6 +25,11 @@
     "zod": "^3.25.36",
     "zod-to-json-schema": "^3.24.5"
   },
+  "pnpm": {
+    "overrides": {
+      "brace-expansion": ">=2.02"
+    }
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",

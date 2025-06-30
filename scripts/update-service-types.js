@@ -14,33 +14,21 @@ const DATABASES_FILE = 'src/mcp/tools/databases.ts';
 const OPENAPI_FILE = 'coolify-openapi.json';
 
 function extractServiceTypes() {
-  console.log('📋 Extracting service types from generated types...');
+  console.log('📋 Extracting service types from OpenAPI spec...');
   
-  // Read the generated types file
-  const typesContent = fs.readFileSync(TYPES_FILE, 'utf8');
+  // Read the OpenAPI spec to find service types
+  const openApiContent = fs.readFileSync(OPENAPI_FILE, 'utf8');
+  const openApiSpec = JSON.parse(openApiContent);
   
-  // Find the CreateServiceData type and extract the service type union
-  const createServiceMatch = typesContent.match(
-    /export type CreateServiceData = \{[\s\S]*?type: ([^;]+);/
-  );
+  const serviceTypes = openApiSpec.paths['/services'].post.requestBody.content['application/json'].schema.properties.type.enum;
   
-  if (!createServiceMatch) {
-    console.error('❌ Could not find CreateServiceData type in generated file');
+  if (!serviceTypes) {
+    console.error('❌ Could not find service types in OpenAPI spec');
     process.exit(1);
   }
-  
-  const unionType = createServiceMatch[1];
-  const typeMatches = unionType.match(/'([^']+)'/g);
-  
-  if (!typeMatches) {
-    console.error('❌ Could not extract service types from union type');
-    process.exit(1);
-  }
-  
-  const serviceTypes = typeMatches.map(t => t.slice(1, -1)).sort();
   
   console.log(`✅ Found ${serviceTypes.length} service types`);
-  return serviceTypes;
+  return serviceTypes.sort();
 }
 
 function extractDatabaseTypes() {

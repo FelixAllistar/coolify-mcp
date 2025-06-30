@@ -85,6 +85,10 @@ export type Application = {
      */
     ports_mappings?: string;
     /**
+     * Network aliases for Docker container.
+     */
+    custom_network_aliases?: string;
+    /**
      * Base directory for all commands.
      */
     base_directory?: string;
@@ -312,6 +316,18 @@ export type Application = {
      * Custom Nginx configuration base64 encoded.
      */
     custom_nginx_configuration?: string;
+    /**
+     * HTTP Basic Authentication enabled.
+     */
+    is_http_basic_auth_enabled?: boolean;
+    /**
+     * Username for HTTP Basic Authentication
+     */
+    http_basic_auth_username?: string;
+    /**
+     * Password for HTTP Basic Authentication
+     */
+    http_basic_auth_password?: string;
 };
 
 /**
@@ -386,6 +402,14 @@ export type PrivateKey = {
     name?: string;
     description?: string;
     private_key?: string;
+    /**
+     * The public key of the private key.
+     */
+    public_key?: string;
+    /**
+     * The fingerprint of the private key.
+     */
+    fingerprint?: string;
     is_git_related?: boolean;
     team_id?: number;
     created_at?: string;
@@ -971,6 +995,22 @@ export type CreatePublicApplicationData = {
          * Use build server.
          */
         use_build_server?: boolean;
+        /**
+         * HTTP Basic Authentication enabled.
+         */
+        is_http_basic_auth_enabled?: boolean;
+        /**
+         * Username for HTTP Basic Authentication
+         */
+        http_basic_auth_username?: string;
+        /**
+         * Password for HTTP Basic Authentication
+         */
+        http_basic_auth_password?: string;
+        /**
+         * The flag to connect the service to the predefined Docker network.
+         */
+        connect_to_docker_network?: boolean;
     };
     path?: never;
     query?: never;
@@ -1262,6 +1302,22 @@ export type CreatePrivateGithubAppApplicationData = {
          * Use build server.
          */
         use_build_server?: boolean;
+        /**
+         * HTTP Basic Authentication enabled.
+         */
+        is_http_basic_auth_enabled?: boolean;
+        /**
+         * Username for HTTP Basic Authentication
+         */
+        http_basic_auth_username?: string;
+        /**
+         * Password for HTTP Basic Authentication
+         */
+        http_basic_auth_password?: string;
+        /**
+         * The flag to connect the service to the predefined Docker network.
+         */
+        connect_to_docker_network?: boolean;
     };
     path?: never;
     query?: never;
@@ -1553,6 +1609,22 @@ export type CreatePrivateDeployKeyApplicationData = {
          * Use build server.
          */
         use_build_server?: boolean;
+        /**
+         * HTTP Basic Authentication enabled.
+         */
+        is_http_basic_auth_enabled?: boolean;
+        /**
+         * Username for HTTP Basic Authentication
+         */
+        http_basic_auth_username?: string;
+        /**
+         * Password for HTTP Basic Authentication
+         */
+        http_basic_auth_password?: string;
+        /**
+         * The flag to connect the service to the predefined Docker network.
+         */
+        connect_to_docker_network?: boolean;
     };
     path?: never;
     query?: never;
@@ -1780,6 +1852,22 @@ export type CreateDockerfileApplicationData = {
          * Use build server.
          */
         use_build_server?: boolean;
+        /**
+         * HTTP Basic Authentication enabled.
+         */
+        is_http_basic_auth_enabled?: boolean;
+        /**
+         * Username for HTTP Basic Authentication
+         */
+        http_basic_auth_username?: string;
+        /**
+         * Password for HTTP Basic Authentication
+         */
+        http_basic_auth_password?: string;
+        /**
+         * The flag to connect the service to the predefined Docker network.
+         */
+        connect_to_docker_network?: boolean;
     };
     path?: never;
     query?: never;
@@ -1995,6 +2083,22 @@ export type CreateDockerimageApplicationData = {
          * Use build server.
          */
         use_build_server?: boolean;
+        /**
+         * HTTP Basic Authentication enabled.
+         */
+        is_http_basic_auth_enabled?: boolean;
+        /**
+         * Username for HTTP Basic Authentication
+         */
+        http_basic_auth_username?: string;
+        /**
+         * Password for HTTP Basic Authentication
+         */
+        http_basic_auth_password?: string;
+        /**
+         * The flag to connect the service to the predefined Docker network.
+         */
+        connect_to_docker_network?: boolean;
     };
     path?: never;
     query?: never;
@@ -2074,6 +2178,10 @@ export type CreateDockercomposeApplicationData = {
          * Use build server.
          */
         use_build_server?: boolean;
+        /**
+         * The flag to connect the service to the predefined Docker network.
+         */
+        connect_to_docker_network?: boolean;
     };
     path?: never;
     query?: never;
@@ -2464,8 +2572,17 @@ export type UpdateApplicationByUuidData = {
          * Use build server.
          */
         use_build_server?: boolean;
+        /**
+         * The flag to connect the service to the predefined Docker network.
+         */
+        connect_to_docker_network?: boolean;
     };
-    path?: never;
+    path: {
+        /**
+         * UUID of the application.
+         */
+        uuid: string;
+    };
     query?: never;
     url: '/applications/{uuid}';
 };
@@ -4614,8 +4731,22 @@ export type DeployByTagOrUuidResponse = DeployByTagOrUuidResponses[keyof DeployB
 
 export type ListDeploymentsByAppUuidData = {
     body?: never;
-    path?: never;
-    query?: never;
+    path: {
+        /**
+         * UUID of the application.
+         */
+        uuid: string;
+    };
+    query?: {
+        /**
+         * Number of records to skip.
+         */
+        skip?: number;
+        /**
+         * Number of records to take.
+         */
+        take?: number;
+    };
     url: '/deployments/applications/{uuid}';
 };
 
@@ -4984,7 +5115,12 @@ export type UpdateProjectByUuidData = {
          */
         description?: string;
     };
-    path?: never;
+    path: {
+        /**
+         * UUID of the project.
+         */
+        uuid: string;
+    };
     query?: never;
     url: '/projects/{uuid}';
 };
@@ -5246,6 +5382,12 @@ export type DeletePrivateKeyByUuidErrors = {
      * Private Key not found.
      */
     404: unknown;
+    /**
+     * Private Key is in use and cannot be deleted.
+     */
+    422: {
+        message?: string;
+    };
 };
 
 export type DeletePrivateKeyByUuidError = DeletePrivateKeyByUuidErrors[keyof DeletePrivateKeyByUuidErrors];
@@ -5765,7 +5907,7 @@ export type CreateServiceData = {
         /**
          * The one-click service type
          */
-        type: 'activepieces' | 'appsmith' | 'appwrite' | 'authentik' | 'babybuddy' | 'budge' | 'changedetection' | 'chatwoot' | 'classicpress-with-mariadb' | 'classicpress-with-mysql' | 'classicpress-without-database' | 'cloudflared' | 'code-server' | 'dashboard' | 'directus' | 'directus-with-postgresql' | 'docker-registry' | 'docuseal' | 'docuseal-with-postgres' | 'dokuwiki' | 'duplicati' | 'emby' | 'embystat' | 'fider' | 'filebrowser' | 'firefly' | 'formbricks' | 'ghost' | 'gitea' | 'gitea-with-mariadb' | 'gitea-with-mysql' | 'gitea-with-postgresql' | 'glance' | 'glances' | 'glitchtip' | 'grafana' | 'grafana-with-postgresql' | 'grocy' | 'heimdall' | 'homepage' | 'jellyfin' | 'kuzzle' | 'listmonk' | 'logto' | 'mediawiki' | 'meilisearch' | 'metabase' | 'metube' | 'minio' | 'moodle' | 'n8n' | 'n8n-with-postgresql' | 'next-image-transformation' | 'nextcloud' | 'nocodb' | 'odoo' | 'openblocks' | 'pairdrop' | 'penpot' | 'phpmyadmin' | 'pocketbase' | 'posthog' | 'reactive-resume' | 'rocketchat' | 'shlink' | 'slash' | 'snapdrop' | 'statusnook' | 'stirling-pdf' | 'supabase' | 'syncthing' | 'tolgee' | 'trigger' | 'trigger-with-external-database' | 'twenty' | 'umami' | 'unleash-with-postgresql' | 'unleash-without-database' | 'uptime-kuma' | 'vaultwarden' | 'vikunja' | 'weblate' | 'whoogle' | 'wordpress-with-mariadb' | 'wordpress-with-mysql' | 'wordpress-without-database';
+        type?: 'activepieces' | 'appsmith' | 'appwrite' | 'authentik' | 'babybuddy' | 'budge' | 'changedetection' | 'chatwoot' | 'classicpress-with-mariadb' | 'classicpress-with-mysql' | 'classicpress-without-database' | 'cloudflared' | 'code-server' | 'dashboard' | 'directus' | 'directus-with-postgresql' | 'docker-registry' | 'docuseal' | 'docuseal-with-postgres' | 'dokuwiki' | 'duplicati' | 'emby' | 'embystat' | 'fider' | 'filebrowser' | 'firefly' | 'formbricks' | 'ghost' | 'gitea' | 'gitea-with-mariadb' | 'gitea-with-mysql' | 'gitea-with-postgresql' | 'glance' | 'glances' | 'glitchtip' | 'grafana' | 'grafana-with-postgresql' | 'grocy' | 'heimdall' | 'homepage' | 'jellyfin' | 'kuzzle' | 'listmonk' | 'logto' | 'mediawiki' | 'meilisearch' | 'metabase' | 'metube' | 'minio' | 'moodle' | 'n8n' | 'n8n-with-postgresql' | 'next-image-transformation' | 'nextcloud' | 'nocodb' | 'odoo' | 'openblocks' | 'pairdrop' | 'penpot' | 'phpmyadmin' | 'pocketbase' | 'posthog' | 'reactive-resume' | 'rocketchat' | 'shlink' | 'slash' | 'snapdrop' | 'statusnook' | 'stirling-pdf' | 'supabase' | 'syncthing' | 'tolgee' | 'trigger' | 'trigger-with-external-database' | 'twenty' | 'umami' | 'unleash-with-postgresql' | 'unleash-without-database' | 'uptime-kuma' | 'vaultwarden' | 'vikunja' | 'weblate' | 'whoogle' | 'wordpress-with-mariadb' | 'wordpress-with-mysql' | 'wordpress-without-database';
         /**
          * Name of the service.
          */
@@ -5798,6 +5940,10 @@ export type CreateServiceData = {
          * Start the service immediately after creation.
          */
         instant_deploy?: boolean;
+        /**
+         * The Docker Compose raw content.
+         */
+        docker_compose_raw?: string;
     };
     path?: never;
     query?: never;
@@ -5992,7 +6138,12 @@ export type UpdateServiceByUuidData = {
          */
         docker_compose_raw: string;
     };
-    path?: never;
+    path: {
+        /**
+         * UUID of the service.
+         */
+        uuid: string;
+    };
     query?: never;
     url: '/services/{uuid}';
 };
@@ -6468,7 +6619,12 @@ export type RestartServiceByUuidData = {
          */
         uuid: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Pull latest images.
+         */
+        latest?: boolean;
+    };
     url: '/services/{uuid}/restart';
 };
 

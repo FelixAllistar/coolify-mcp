@@ -708,7 +708,7 @@ export const getDeploymentByUuid = <ThrowOnError extends boolean = false>(option
 
 /**
  * Deploy
- * Deploy by tag or uuid. `Post` request also accepted.
+ * Deploy by tag or uuid. `Post` request also accepted with `uuid` and `tag` json body.
  */
 export const deployByTagOrUuid = <ThrowOnError extends boolean = false>(options?: Options<DeployByTagOrUuidData, ThrowOnError>) => {
     return (options?.client ?? _heyApiClient).get<DeployByTagOrUuidResponses, DeployByTagOrUuidErrors, ThrowOnError>({
@@ -727,8 +727,8 @@ export const deployByTagOrUuid = <ThrowOnError extends boolean = false>(options?
  * List application deployments
  * List application deployments by using the app uuid
  */
-export const listDeploymentsByAppUuid = <ThrowOnError extends boolean = false>(options?: Options<ListDeploymentsByAppUuidData, ThrowOnError>) => {
-    return (options?.client ?? _heyApiClient).get<ListDeploymentsByAppUuidResponses, ListDeploymentsByAppUuidErrors, ThrowOnError>({
+export const listDeploymentsByAppUuid = <ThrowOnError extends boolean = false>(options: Options<ListDeploymentsByAppUuidData, ThrowOnError>) => {
+    return (options.client ?? _heyApiClient).get<ListDeploymentsByAppUuidResponses, ListDeploymentsByAppUuidErrors, ThrowOnError>({
         security: [
             {
                 scheme: 'bearer',

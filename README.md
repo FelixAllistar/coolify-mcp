@@ -236,7 +236,3 @@ npm install -g @felixallistar/coolify-mcp
 coolify-mcp --help
 coolify-mcp apps list
 ```
-
-**Smart Detection:** 
-- `coolify-mcp` (no args) → MCP server mode
-- `coolify-mcp <command>` → CLI mode 
